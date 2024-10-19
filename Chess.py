@@ -35,6 +35,21 @@ def sträng_position_till_vektor2(sträng):
     
     return (kolumn,rad)
 
+def vektor2_till_sträng_position(vektor2):
+    kolumn = vektor2[0]  # Ex. 4 för kolumn
+    rad = vektor2[1]     # Ex. 6 för rad
+    
+    kolumn_sträng = kolumn_till_sträng_katalog[kolumn]
+    rad_sträng = str(8 - rad)  # Omvandlar rad till motsvarande sträng
+    
+    return kolumn_sträng + rad_sträng
+
+def konvertera_vektor2_lista_till_sträng_position_lista(vektor2_lista):
+    sträng_position_lista=[]
+    for vektor2 in vektor2_lista:
+        sträng_position_lista.append(vektor2_till_sträng_position(vektor2))
+    return sträng_position_lista
+
 def är_vektor2_i_matris(vektor2, matris):
     if (vektor2[0] in range(len(matris))) and (vektor2[1] in range(len(matris[0]))):
         return True
@@ -94,13 +109,12 @@ class FlyttGraf():
 
 
 class FlyttBeteende:
-    def __init__(self, förälder, flytt_graf, kan_döda, krav_funktion=None):
-        self.förälder=förälder
+    def __init__(self, flytt_graf, kan_döda, krav_funktion=None):
         self.kan_döda=kan_döda
         self.flytt_graf= flytt_graf
         self.krav_funktion = krav_funktion
         
-    def ge_lista_på_möjliga_flyttar_med_krav(self,pjäs):
+    def ge_vektor2_lista_på_möjliga_flyttar_med_krav(self,pjäs):
         if self.krav_funktion==None:
             villkor_inanför_matris=Villkor(är_vektor2_i_matris, matris=pjäs.förälder)
             villkor_kollision=Villkor(är_vektor2_en_icke_valid_kollision_med_annan_pjäs,schackbräde_matris=pjäs.förälder, beteende=self, pjäs=pjäs)
@@ -123,13 +137,13 @@ class Pjäs:
         return self.karaktär
     
     def lägg_till_flytt_beteende(self,flytt_graf,kan_döda,krav_funktion=None):
-        nytt_flytt_beteende=FlyttBeteende(self,flytt_graf,kan_döda,krav_funktion)
+        nytt_flytt_beteende=FlyttBeteende(flytt_graf,kan_döda,krav_funktion)
         self.beteende_lista.append(nytt_flytt_beteende)
         
-    def ge_lista_på_alla_möjliga_flyttar(self):
+    def ge_vektor2_lista_på_alla_möjliga_flyttar(self):
         alla_möjliga_flyttar=[]
         for beteende in self.beteende_lista:
-            alla_möjliga_flyttar+=beteende.ge_lista_på_möjliga_flyttar_med_krav(self)
+            alla_möjliga_flyttar+=beteende.ge_vektor2_lista_på_möjliga_flyttar_med_krav(self)
         return alla_möjliga_flyttar
     
 def skapa_pjäs_bonde(schack_bräde,x,y,vit):
@@ -215,7 +229,7 @@ def rita_schack_bräde(schackbräde_matris):
     print(bräde_sträng)
 
 
-def välj_vektor_position_i_matris(matris):
+def välj_vektor2_position_i_matris(matris):
 
         vald_sträng_position=input()
         
@@ -223,8 +237,6 @@ def välj_vektor_position_i_matris(matris):
         max_höjd=len(matris[0])
         
         try:
-            if vald_sträng_position=="exit":
-                return()
             if len(vald_sträng_position)>1:
                 if vald_sträng_position[0] in sträng_till_kolumn_katalog:
                      if int(vald_sträng_position[1]) in range(1,max_bredd):
@@ -236,33 +248,62 @@ def välj_vektor_position_i_matris(matris):
         except:
            print("Försök Igen!")
 
+def välj_vektor2_position_i_sträng_position_lista(sträng_position_lista):
+        vald_sträng_position=input()
+        try:
+            if len(vald_sträng_position)>1:
+                if vald_sträng_position in sträng_position_lista:
+                    return(sträng_position_lista[sträng_position_lista.index(vald_sträng_position)])
+        except:
+           print("")
+
+class FlyttObjekt():
+        def __init__(self, pjäs, schackbräde_matris, start_vektor2, vektor2_lista_flytt_alternativ, ):
+            self.pjäs = pjäs
+            self.schackbräde_matris = schackbräde_matris
+            self.start_vektor2 = start_vektor2
+            self.vektor2_lista_flytt_alternativ = vektor2_lista_flytt_alternativ
+            self.sträng_position_lista_flytt_alternativ=konvertera_vektor2_lista_till_sträng_position_lista(vektor2_lista_flytt_alternativ)
+        
+
+def välj_position_och_få_flytt_objekt_i_schackbräde_matris(schackbräde_matris):
+    while True:
+        print("Välj en pjäs genom att skriva in bokstav(kolumn) och siffra(rad). T.ex. e2) \n")
+        vald_vektor=välj_vektor2_position_i_matris(schackbräde_matris)
+        if vald_vektor!=None: #Om man ej valt en position
+            vald_position=schackbräde_matris[vald_vektor[0]][vald_vektor[1]]
+            
+            if vald_position.pjäs!=None:
+                vektor2_lista_flytt_alternativ=vald_position.pjäs.ge_vektor2_lista_på_alla_möjliga_flyttar()
+                return FlyttObjekt(vald_position.pjäs,schackbräde_matris,vald_vektor,vektor2_lista_flytt_alternativ)
+
+
+
 def spela_schack_match(schackbräde_matris):
     rita_schack_bräde(schackbräde_matris)
     match_pågår=True
-    vald_position=None
+
     
     while match_pågår:
+        flytt_objekt=välj_position_och_få_flytt_objekt_i_schackbräde_matris(schackbräde_matris)
+        rita_schack_bräde(schackbräde_matris)
         
-        print("Välj en pjäs genom att skriva in bokstav(kolumn) och siffra(rad). T.ex. e2) \n")
-        vald_vektor=välj_vektor_position_i_matris(schackbräde_matris)
-        if vald_vektor!=None:
-            vald_position=schackbräde_matris[vald_vektor[0]][vald_vektor[1]]
-            if vald_position.pjäs==None:
-                vald_position=None     
-            else:
-                print(vald_position.pjäs.ge_lista_på_alla_möjliga_flyttar())
-            print(vald_position)
-
-
+        print(f'Du har valt att flytta {vektor2_till_sträng_position(flytt_objekt.start_vektor2)} {flytt_objekt.pjäs.namn}, detta är dina flytt alternativ: ')
+        print(flytt_objekt.sträng_position_lista_flytt_alternativ)
+        vald_vektor2_position=välj_vektor2_position_i_sträng_position_lista(flytt_objekt.sträng_position_lista_flytt_alternativ)
+        #print(f'Du flyttade {vektor2_till_sträng_position(flytt_objekt.start_vektor2)} {flytt_objekt.pjäs.namn} till {vald_vektor2_position}')
+        match_pågår=False
 standard_schackbräde_matris=skapa_standard_schackbräde_matris()
 spela_schack_match(standard_schackbräde_matris)
 
 #Tänk kring att ha en lista på flyttkrav istället för att hardcoda saker i while. *check
 #Snygga till kod, ta bort onödiga moment *check
 
-#kommentera lite.
-#Kolla lag när man kan döda
+#Kolla lag när man kan döda *check
+#Flytt alternativ *check
+
 #Flytt funktion
+#kommentera lite.
 #Skriv klart alla pjäser
 #Positionera pjäser
 #Varanan tur system
