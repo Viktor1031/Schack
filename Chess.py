@@ -55,6 +55,22 @@ def är_vektor2_i_matris(vektor2, matris):
         return True
     return False
 
+def flytt_beetende_krav_är_detta_pjäsens_första_drag(pjäs,schackbräde_matris):
+    if pjäs.drag==0:
+        return True
+    return False
+
+def flytt_beetende_krav_finns_det_en_fiende_pjäs_på_vektor2_position_relativt_till_pjäs(schackbräde_matris,pjäs,vektor2_position):
+    print(vektor2_position[0]+pjäs.x)
+    print(vektor2_position[1]+pjäs.y)
+    fiende_pjäs=schackbräde_matris[vektor2_position[0]+pjäs.x][vektor2_position[1]+pjäs.y].pjäs
+    if fiende_pjäs!=None:
+        print("YEs1")
+        if fiende_pjäs.färg!=pjäs.färg:
+            print("YEs2")
+            return True
+    return False
+
 def är_vektor2_en_icke_valid_kollision_med_annan_pjäs(vektor2, schackbräde_matris, beteende, pjäs):
     
     x=vektor2[0]
@@ -109,17 +125,21 @@ class FlyttGraf():
 
 
 class FlyttBeteende:
-    def __init__(self, flytt_graf, kan_döda, krav_funktion=None):
+    def __init__(self, flytt_graf, kan_döda, beetende_villkor_lista):
         self.kan_döda=kan_döda
         self.flytt_graf= flytt_graf
-        self.krav_funktion = krav_funktion
+        self.beetende_villkor_lista = beetende_villkor_lista
         
     def ge_vektor2_lista_på_möjliga_flyttar_med_krav(self,pjäs):
-        if self.krav_funktion==None:
-            villkor_inanför_matris=Villkor(är_vektor2_i_matris, matris=pjäs.förälder)
-            villkor_kollision=Villkor(är_vektor2_en_icke_valid_kollision_med_annan_pjäs,schackbräde_matris=pjäs.förälder, beteende=self, pjäs=pjäs)
-            return self.flytt_graf.hitta_graf_punkter((pjäs.x,pjäs.y),[villkor_inanför_matris,villkor_kollision])
-        return None
+
+        for beetende_villkor in self.beetende_villkor_lista:
+            if (beetende_villkor.kolla_villkor(pjäs=pjäs, schackbräde_matris=pjäs.förälder))==False:
+                return []
+        
+        villkor_inanför_matris=Villkor(är_vektor2_i_matris, matris=pjäs.förälder)
+        villkor_kollision=Villkor(är_vektor2_en_icke_valid_kollision_med_annan_pjäs,schackbräde_matris=pjäs.förälder, beteende=self, pjäs=pjäs)
+        return self.flytt_graf.hitta_graf_punkter((pjäs.x,pjäs.y),[villkor_inanför_matris,villkor_kollision])
+
        
 class Pjäs:
     def __init__(self, namn, karaktär, förälder, x, y, färg):
@@ -130,14 +150,14 @@ class Pjäs:
         self.y=y
         self.färg=färg
         self.beteende_lista=[]
-        self.moves=0
+        self.drag=0
 
     
     def hämta_utseende_sträng(self):
         return self.karaktär
     
-    def lägg_till_flytt_beteende(self,flytt_graf,kan_döda,krav_funktion=None):
-        nytt_flytt_beteende=FlyttBeteende(flytt_graf,kan_döda,krav_funktion)
+    def lägg_till_flytt_beteende(self,flytt_graf,kan_döda,beetende_villkor=[]):
+        nytt_flytt_beteende=FlyttBeteende(flytt_graf,kan_döda,beetende_villkor)
         self.beteende_lista.append(nytt_flytt_beteende)
         
     def ge_vektor2_lista_på_alla_möjliga_flyttar(self):
@@ -147,16 +167,24 @@ class Pjäs:
         return alla_möjliga_flyttar
 
 
-def lägg_till_beetenden_för_bonde(pjäs):
-    pjäs.lägg_till_flytt_beteende(FlyttGraf(0, -1, 1),False)
-    
+def lägg_till_beetenden_för_bonde(pjäs, vit):
+    if vit==True:
+        pjäs.lägg_till_flytt_beteende(FlyttGraf(0, -1, 1),False)
+        pjäs.lägg_till_flytt_beteende(FlyttGraf(0, -2, 1),False,[Villkor(flytt_beetende_krav_är_detta_pjäsens_första_drag)])
+        pjäs.lägg_till_flytt_beteende(FlyttGraf(-1, -1, 1),True,[Villkor(flytt_beetende_krav_finns_det_en_fiende_pjäs_på_vektor2_position_relativt_till_pjäs,vektor2_position=[-1, -1])])
+        pjäs.lägg_till_flytt_beteende(FlyttGraf(1, -1, 1),True,[Villkor(flytt_beetende_krav_finns_det_en_fiende_pjäs_på_vektor2_position_relativt_till_pjäs,vektor2_position=[1, -1])])
+    else:
+        pjäs.lägg_till_flytt_beteende(FlyttGraf(0, 1, 1),False)
+        pjäs.lägg_till_flytt_beteende(FlyttGraf(0, 2, 1),False,[Villkor(flytt_beetende_krav_är_detta_pjäsens_första_drag)])
+        pjäs.lägg_till_flytt_beteende(FlyttGraf(-1, 1, 1),True,[Villkor(flytt_beetende_krav_finns_det_en_fiende_pjäs_på_vektor2_position_relativt_till_pjäs,vektor2_position=[-1, 1])])
+        pjäs.lägg_till_flytt_beteende(FlyttGraf(1, 1, 1),True,[Villkor(flytt_beetende_krav_finns_det_en_fiende_pjäs_på_vektor2_position_relativt_till_pjäs,vektor2_position=[1, 1])])
 def skapa_pjäs_bonde(schack_bräde,x,y,vit):
     if vit==True:
-        bonde=Pjäs("Vit Bonde","♙", schack_bräde, x, y, 0)
-        lägg_till_beetenden_för_bonde(bonde)
+        bonde=Pjäs("Vit Bonde","♙", schack_bräde, x, y, 0,)
+        lägg_till_beetenden_för_bonde(bonde,vit)
     else:
         bonde=Pjäs("Svart Bonde","♟", schack_bräde, x, y,1)
-        lägg_till_beetenden_för_bonde(bonde)
+        lägg_till_beetenden_för_bonde(bonde,vit)
         
     schack_bräde[x][y].pjäs=bonde
 
@@ -246,8 +274,6 @@ def skapa_pjäs_kung(schack_bräde,x,y,vit): #Skirv inte schackbräde här
     schack_bräde[x][y].pjäs=kung
     
 
-    
-    
 def placera_standard_pjäser_i_shack_position_matris(matris):
     
     for ix in range(8):
@@ -377,6 +403,7 @@ class FlyttObjekt():
             vald_schack_position.pjäs=self.pjäs
             self.pjäs.x=vald_vektor2[0]
             self.pjäs.y=vald_vektor2[1]
+            self.pjäs.drag+=1
             
 
 def välj_position_och_få_flytt_objekt_i_schackbräde_matris(schackbräde_matris):
@@ -425,8 +452,11 @@ spela_schack_match(standard_schackbräde_matris)
 #Torn *check
 #Dam *check
 #Bonde 1 fram *check
-#Bonde 2 fram
-#Bonde ta åt sidan
+#Bonde 2 fram bara på första *check
+#Bonde ta åt sidan bara om det är någon där *check
+
+
+# Byta ut validering av flyttar till en global validera_flytt som sker efter man hittat positioner att flytta till?
 
 #kommentera lite.
 #Positionera pjäser
@@ -438,3 +468,4 @@ spela_schack_match(standard_schackbräde_matris)
 #Rookad
 #Schack funktionalitet med kungen
 #En passant
+#Visuell remake, typ pygame render
