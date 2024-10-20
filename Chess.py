@@ -61,15 +61,15 @@ def flytt_beetende_krav_är_detta_pjäsens_första_drag(pjäs,schackbräde_matri
     return False
 
 def flytt_beetende_krav_finns_det_en_fiende_pjäs_på_vektor2_position_relativt_till_pjäs(schackbräde_matris,pjäs,vektor2_position):
-    print(vektor2_position[0]+pjäs.x)
-    print(vektor2_position[1]+pjäs.y)
-    fiende_pjäs=schackbräde_matris[vektor2_position[0]+pjäs.x][vektor2_position[1]+pjäs.y].pjäs
-    if fiende_pjäs!=None:
-        print("YEs1")
-        if fiende_pjäs.färg!=pjäs.färg:
-            print("YEs2")
-            return True
-    return False
+    x=vektor2_position[0]+pjäs.x
+    y=vektor2_position[1]+pjäs.y
+    
+    if är_vektor2_i_matris([x,y],schackbräde_matris)==True:
+        fiende_pjäs=schackbräde_matris[x][y].pjäs
+        if fiende_pjäs!=None:
+            if fiende_pjäs.färg!=pjäs.färg:
+                return True
+        return False
 
 def är_vektor2_en_icke_valid_kollision_med_annan_pjäs(vektor2, schackbräde_matris, beteende, pjäs):
     
@@ -80,7 +80,7 @@ def är_vektor2_en_icke_valid_kollision_med_annan_pjäs(vektor2, schackbräde_ma
     
     if annan_pjäs!=None:
         if (beteende.kan_döda==True) and (annan_pjäs.färg!=pjäs.färg):
-            return True
+            return 2 #Sluta grafen, men lägg till pjäs
         else:
             return False
     return True
@@ -116,7 +116,12 @@ class FlyttGraf():
             steg+=1
             
             for graf_villkor in graf_villkor_lista:
-                if graf_villkor.kolla_villkor(vektor2=[x,y])==False:
+                villkor_resultat=graf_villkor.kolla_villkor(vektor2=[x,y])
+                
+                if villkor_resultat==False:
+                    return graf_punkter
+                elif villkor_resultat==2:
+                    graf_punkter.append((x,y))
                     return graf_punkter
                 
             graf_punkter.append((x,y))
@@ -139,7 +144,7 @@ class FlyttBeteende:
         villkor_inanför_matris=Villkor(är_vektor2_i_matris, matris=pjäs.förälder)
         villkor_kollision=Villkor(är_vektor2_en_icke_valid_kollision_med_annan_pjäs,schackbräde_matris=pjäs.förälder, beteende=self, pjäs=pjäs)
         return self.flytt_graf.hitta_graf_punkter((pjäs.x,pjäs.y),[villkor_inanför_matris,villkor_kollision])
-
+        
        
 class Pjäs:
     def __init__(self, namn, karaktär, förälder, x, y, färg):
@@ -178,6 +183,7 @@ def lägg_till_beetenden_för_bonde(pjäs, vit):
         pjäs.lägg_till_flytt_beteende(FlyttGraf(0, 2, 1),False,[Villkor(flytt_beetende_krav_är_detta_pjäsens_första_drag)])
         pjäs.lägg_till_flytt_beteende(FlyttGraf(-1, 1, 1),True,[Villkor(flytt_beetende_krav_finns_det_en_fiende_pjäs_på_vektor2_position_relativt_till_pjäs,vektor2_position=[-1, 1])])
         pjäs.lägg_till_flytt_beteende(FlyttGraf(1, 1, 1),True,[Villkor(flytt_beetende_krav_finns_det_en_fiende_pjäs_på_vektor2_position_relativt_till_pjäs,vektor2_position=[1, 1])])
+
 def skapa_pjäs_bonde(schack_bräde,x,y,vit):
     if vit==True:
         bonde=Pjäs("Vit Bonde","♙", schack_bräde, x, y, 0,)
@@ -387,6 +393,7 @@ def välj_sträng_position_i_sträng_position_lista(sträng_position_lista):
                 print(f'Strängen du skriver in ska vara 2 karaktärer lång')
         except:
            print("Fanns inget sådant drag att välja")
+        
 
 class FlyttObjekt():
         def __init__(self, pjäs, start_schack_position, schackbräde_matris, start_vektor2, vektor2_lista_flytt_alternativ, ):
@@ -404,38 +411,104 @@ class FlyttObjekt():
             self.pjäs.x=vald_vektor2[0]
             self.pjäs.y=vald_vektor2[1]
             self.pjäs.drag+=1
-            
+        def ta_tillbaka_flytt(self,vald_vektor2):
+            print("KOd")
 
-def välj_position_och_få_flytt_objekt_i_schackbräde_matris(schackbräde_matris):
+def är_kung_i_schack(schackbräde_matris, färg):
+    kung_position = None
+    for ix in range(len(schackbräde_matris)):
+        for iy in range(len(schackbräde_matris[0])):
+            pjäs = schackbräde_matris[ix][iy].pjäs
+            if pjäs and pjäs.namn == ("Vit Kung" if färg == 0 else "Svart Kung"):
+                kung_position = (ix, iy)
+                break
+        if kung_position:
+            break  
+
+    if not kung_position:
+        return False 
+
+    for ix in range(len(schackbräde_matris)):
+        for iy in range(len(schackbräde_matris[0])):
+            pjäs = schackbräde_matris[ix][iy].pjäs
+            if pjäs and pjäs.färg != färg:
+                möjliga_drag = pjäs.ge_vektor2_lista_på_alla_möjliga_flyttar()
+                if kung_position in möjliga_drag:
+                    return True  # Kungen är i schack
+    return False  # Kungen är inte i schack
+
+def ta_bort_flytt_alternativ_som_leder_till_egen_kung_i_schack(schackbräde_matris, pjäs, flytt_alternativ):
+    giltiga_alternativ = []
+    for vektor2 in flytt_alternativ:
+        # Spara nuvarande tillstånd
+        ursprunglig_pjäs = schackbräde_matris[vektor2[0]][vektor2[1]].pjäs
+        start_x, start_y = pjäs.x, pjäs.y
+
+        # Simulera draget
+        schackbräde_matris[start_x][start_y].pjäs = None
+        schackbräde_matris[vektor2[0]][vektor2[1]].pjäs = pjäs
+        pjäs.x, pjäs.y = vektor2[0], vektor2[1]
+
+        # Kolla om kungen är i schack
+        if not är_kung_i_schack(schackbräde_matris, pjäs.färg):
+            giltiga_alternativ.append(vektor2)
+
+        # Återställ tillståndet
+        schackbräde_matris[start_x][start_y].pjäs = pjäs
+        schackbräde_matris[vektor2[0]][vektor2[1]].pjäs = ursprunglig_pjäs
+        pjäs.x, pjäs.y = start_x, start_y
+
+    return giltiga_alternativ
+
+def välj_position_och_få_flytt_objekt_i_schackbräde_matris(schackbräde_matris, nuvarande_spelare_färg):
     while True:
-        print("Välj en pjäs genom att skriva in bokstav(kolumn) och siffra(rad). T.ex. e2) \n")
-        vald_vektor=välj_vektor2_position_i_matris(schackbräde_matris)
-        if vald_vektor!=None: #Om man ej valt en position
-            vald_position=schackbräde_matris[vald_vektor[0]][vald_vektor[1]]
-            
-            if vald_position.pjäs!=None:
-                vektor2_lista_flytt_alternativ=vald_position.pjäs.ge_vektor2_lista_på_alla_möjliga_flyttar()
-                return FlyttObjekt(vald_position.pjäs,vald_position,schackbräde_matris,vald_vektor,vektor2_lista_flytt_alternativ)
+        print("Välj en pjäs genom att skriva in bokstav(kolumn) och siffra(rad), t.ex. e2:")
+        vald_vektor = välj_vektor2_position_i_matris(schackbräde_matris)
+        if vald_vektor != None:
+            vald_position = schackbräde_matris[vald_vektor[0]][vald_vektor[1]]
 
-
+            if vald_position.pjäs != None:
+                if vald_position.pjäs.färg != nuvarande_spelare_färg:
+                    print("Du kan inte flytta motståndarens pjäs!")
+                    continue
+                vektor2_lista_flytt_alternativ = vald_position.pjäs.ge_vektor2_lista_på_alla_möjliga_flyttar()
+                vektor2_lista_flytt_alternativ = ta_bort_flytt_alternativ_som_leder_till_egen_kung_i_schack(
+                    schackbräde_matris, vald_position.pjäs, vektor2_lista_flytt_alternativ)
+                if len(vektor2_lista_flytt_alternativ)<1:
+                    ("Inga giltiga drag för denna pjäs.")
+                    continue
+                return FlyttObjekt(vald_position.pjäs, vald_position, schackbräde_matris, vald_vektor, vektor2_lista_flytt_alternativ)
+            else:
+                print("Ingen pjäs på vald position.")
+        else:
+            print("Ogiltig position, försök igen.")
 
 def spela_schack_match(schackbräde_matris):
-    match_pågår=True
+    match_pågår = True
+    nuvarande_spelare_färg = 0  # 0 = vit, 1 = svart
 
-    
     while match_pågår:
         rita_schack_bräde(schackbräde_matris)
-        flytt_objekt=välj_position_och_få_flytt_objekt_i_schackbräde_matris(schackbräde_matris)
-        rita_schack_bräde(schackbräde_matris)
-        
-        print(f'Du har valt att flytta {vektor2_till_sträng_position(flytt_objekt.start_vektor2)} {flytt_objekt.pjäs.namn}, detta är dina flytt alternativ: ')
+        print(f"{'Vit' if nuvarande_spelare_färg == 0 else 'Svart'} spelar")
+        flytt_objekt = välj_position_och_få_flytt_objekt_i_schackbräde_matris(schackbräde_matris, nuvarande_spelare_färg)
+
+        print(f"Du har valt att flytta {vektor2_till_sträng_position(flytt_objekt.start_vektor2)} {flytt_objekt.pjäs.namn}, detta är dina flyttalternativ:")
         print(flytt_objekt.sträng_position_lista_flytt_alternativ)
-        vald_sträng_position=välj_sträng_position_i_sträng_position_lista(flytt_objekt.sträng_position_lista_flytt_alternativ)
-        if vald_sträng_position!=None:
-            vald_vektor2_position=sträng_position_till_vektor2(vald_sträng_position)
-            print(f'Du flyttade {vektor2_till_sträng_position(flytt_objekt.start_vektor2)} {flytt_objekt.pjäs.namn} till {vald_sträng_position}')
-            print(vald_vektor2_position)
+        print("Välj ditt drag:")
+        
+        vald_sträng_position = välj_sträng_position_i_sträng_position_lista(flytt_objekt.sträng_position_lista_flytt_alternativ)
+        if vald_sträng_position !=None:
+            vald_vektor2_position = sträng_position_till_vektor2(vald_sträng_position)
+            print(f"Du flyttade {vektor2_till_sträng_position(flytt_objekt.start_vektor2)} {flytt_objekt.pjäs.namn} till {vald_sträng_position}")
             flytt_objekt.utför_flytt(vald_vektor2_position)
+
+            # Kolla motståndarens kung är i schack
+            motståndare_färg = 1 - nuvarande_spelare_färg
+            if är_kung_i_schack(schackbräde_matris, motståndare_färg):
+                print(f"{'Vit' if motståndare_färg == 0 else 'Svart'} kung är i schack!")
+
+            #Byt spelaretu tru
+            nuvarande_spelare_färg = motståndare_färg
         
 standard_schackbräde_matris=skapa_standard_schackbräde_matris()
 spela_schack_match(standard_schackbräde_matris)
@@ -457,15 +530,21 @@ spela_schack_match(standard_schackbräde_matris)
 
 
 # Byta ut validering av flyttar till en global validera_flytt som sker efter man hittat positioner att flytta till?
+# Svar Nej
 
-#kommentera lite.
-#Positionera pjäser
-#Varanan tur system
-#Kan ej flytta motståndares pjäs under sin tur.
+#kommentera lite. Tråkigt
+
+#Positionera pjäser * Check
+#Varanan tur system *Check
+#Kan ej flytta motståndares pjäs under sin tur. *Check
+#Schack funktionalitet med kungen *Check
+#Snygga till kod eller skirv om lite.
+
+
+#SchackMatt ??
 
 #Beetende utökning? Resultat funktion?
 #Bonde till drottning
 #Rookad
-#Schack funktionalitet med kungen
 #En passant
 #Visuell remake, typ pygame render
