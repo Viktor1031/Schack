@@ -186,10 +186,10 @@ def lägg_till_beetenden_för_bonde(pjäs, vit):
 
 def skapa_pjäs_bonde(schack_bräde,x,y,vit):
     if vit==True:
-        bonde=Pjäs("Vit Bonde","♙", schack_bräde, x, y, 0,)
+        bonde=Pjäs("Vit Bonde","B", schack_bräde, x, y, 0,) #♙
         lägg_till_beetenden_för_bonde(bonde,vit)
     else:
-        bonde=Pjäs("Svart Bonde","♟", schack_bräde, x, y,1)
+        bonde=Pjäs("Svart Bonde","b", schack_bräde, x, y,1) #♟
         lägg_till_beetenden_för_bonde(bonde,vit)
         
     schack_bräde[x][y].pjäs=bonde
@@ -202,11 +202,11 @@ def lägg_till_beetenden_för_löpare(pjäs):
 
 def skapa_pjäs_löpare(schack_bräde,x,y,vit): #Skirv inte schackbräde här
     if vit==True:
-        löpare=Pjäs("Vit Löpare","♗", schack_bräde, x, y, 0)
+        löpare=Pjäs("Vit Löpare","L", schack_bräde, x, y, 0) #♗
         lägg_till_beetenden_för_löpare(löpare)
         
     else:
-        löpare=Pjäs("Svart Löpare","♝", schack_bräde, x, y,1)
+        löpare=Pjäs("Svart Löpare","l", schack_bräde, x, y,1) #♝
         lägg_till_beetenden_för_löpare(löpare)
         
     schack_bräde[x][y].pjäs=löpare
@@ -223,10 +223,10 @@ def lägg_till_beetenden_för_häst(pjäs):
 
 def skapa_pjäs_häst(schack_bräde,x,y,vit): #Skirv inte schackbräde här
     if vit==True:
-        häst=Pjäs("Vit Häst","♘", schack_bräde, x, y, 0)
+        häst=Pjäs("Vit Häst","H", schack_bräde, x, y, 0) #♘
         lägg_till_beetenden_för_häst(häst)
     else:
-        häst=Pjäs("Svart Häst","♞", schack_bräde, x, y,1)
+        häst=Pjäs("Svart Häst","h", schack_bräde, x, y,1) #♞
         lägg_till_beetenden_för_häst(häst)
         
     schack_bräde[x][y].pjäs=häst
@@ -239,10 +239,10 @@ def lägg_till_beetenden_för_torn(pjäs):
         
 def skapa_pjäs_torn(schack_bräde,x,y,vit): #Skirv inte schackbräde här
     if vit==True:
-        torn=Pjäs("Vitt Torn","♖", schack_bräde, x, y, 0)
+        torn=Pjäs("Vitt Torn","T", schack_bräde, x, y, 0) #♖
         lägg_till_beetenden_för_torn(torn)
     else:
-        torn=Pjäs("Svart Torn","♜", schack_bräde, x, y,1)
+        torn=Pjäs("Svart Torn","t", schack_bräde, x, y,1) #♜
         lägg_till_beetenden_för_torn(torn)
         
     schack_bräde[x][y].pjäs=torn
@@ -250,11 +250,11 @@ def skapa_pjäs_torn(schack_bräde,x,y,vit): #Skirv inte schackbräde här
     
 def skapa_pjäs_dam(schack_bräde,x,y,vit): #Skirv inte schackbräde här
     if vit==True:
-        dam=Pjäs("Vit Dam","♕", schack_bräde, x, y, 0)
+        dam=Pjäs("Vit Dam","D", schack_bräde, x, y, 0) #D♕
         lägg_till_beetenden_för_torn(dam)
         lägg_till_beetenden_för_löpare(dam)
     else:
-        dam=Pjäs("Svart Dam","♛", schack_bräde, x, y,1)
+        dam=Pjäs("Svart Dam","d", schack_bräde, x, y,1) #♛
         lägg_till_beetenden_för_torn(dam)
         lägg_till_beetenden_för_löpare(dam)
     schack_bräde[x][y].pjäs=dam
@@ -271,10 +271,10 @@ def lägg_till_beetenden_för_kung(pjäs):
 
 def skapa_pjäs_kung(schack_bräde,x,y,vit): #Skirv inte schackbräde här
     if vit==True:
-        kung=Pjäs("Vit Kung","♔", schack_bräde, x, y, 0)
+        kung=Pjäs("Vit Kung","K", schack_bräde, x, y, 0) #♔
         lägg_till_beetenden_för_kung(kung)
     else:
-        kung=Pjäs("Svart Kung","♚", schack_bräde, x, y,1)
+        kung=Pjäs("Svart Kung","k", schack_bräde, x, y,1) #♚
         lägg_till_beetenden_för_kung(kung)
         
     schack_bräde[x][y].pjäs=kung
@@ -357,7 +357,7 @@ def rita_schack_bräde(schackbräde_matris):
     for iy in range(len(schackbräde_matris[0])):
         for ix in range(len(schackbräde_matris)):
             schack_position=schackbräde_matris[ix][iy]
-            bräde_sträng+=schack_position.hämta_utseende_sträng()
+            bräde_sträng+=schack_position.hämta_utseende_sträng()+" "
         bräde_sträng+="\n"            
     print(bräde_sträng)
 
@@ -437,6 +437,22 @@ def är_kung_i_schack(schackbräde_matris, färg):
                     return True  # Kungen är i schack
     return False  # Kungen är inte i schack
 
+
+def är_schackmatt(schackbräde_matris, färg):
+    
+    for ix in range(len(schackbräde_matris)):
+        for iy in range(len(schackbräde_matris[0])):
+            pjäs = schackbräde_matris[ix][iy].pjäs
+            if pjäs and pjäs.färg == färg:
+                möjliga_drag = pjäs.ge_vektor2_lista_på_alla_möjliga_flyttar()
+                möjliga_drag = ta_bort_flytt_alternativ_som_leder_till_egen_kung_i_schack(schackbräde_matris, pjäs, möjliga_drag)
+                if len(möjliga_drag)>0:
+                    print("YEe")
+                    print(möjliga_drag)
+                    return False  # Det finns minst ett drag som kan undvika schack
+    
+    return True  # Ingen pjäs kan flyttas för att undvika schack, det är schackmatt
+
 def ta_bort_flytt_alternativ_som_leder_till_egen_kung_i_schack(schackbräde_matris, pjäs, flytt_alternativ):
     giltiga_alternativ = []
     for vektor2 in flytt_alternativ:
@@ -502,13 +518,20 @@ def spela_schack_match(schackbräde_matris):
             print(f"Du flyttade {vektor2_till_sträng_position(flytt_objekt.start_vektor2)} {flytt_objekt.pjäs.namn} till {vald_sträng_position}")
             flytt_objekt.utför_flytt(vald_vektor2_position)
 
-            # Kolla motståndarens kung är i schack
+            # Kolla schackcmatt
             motståndare_färg = 1 - nuvarande_spelare_färg
             if är_kung_i_schack(schackbräde_matris, motståndare_färg):
-                print(f"{'Vit' if motståndare_färg == 0 else 'Svart'} kung är i schack!")
+                if är_schackmatt(schackbräde_matris, motståndare_färg):
+                    print(f"{'Vit' if nuvarande_spelare_färg == 0 else 'Svart'} vinner! Schackmatt!")
+                    match_pågår = False
+                else:
+                    print(f"{'Vit' if motståndare_färg == 0 else 'Svart'} kung är i schack!")
+
 
             #Byt spelaretu tru
             nuvarande_spelare_färg = motståndare_färg
+            
+            
         
 standard_schackbräde_matris=skapa_standard_schackbräde_matris()
 spela_schack_match(standard_schackbräde_matris)
@@ -541,7 +564,7 @@ spela_schack_match(standard_schackbräde_matris)
 #Snygga till kod eller skirv om lite.
 
 
-#SchackMatt ??
+#SchackMatt ?? *Check
 
 #Beetende utökning? Resultat funktion?
 #Bonde till drottning
