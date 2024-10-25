@@ -171,16 +171,6 @@ class FlyttGraf():
             
         return graf_punkter
 
-def resultat_funktion_gör_bonde_till_drottning(schackbräde_matris,pjäs):
-    schackbräde_matris[pjäs.x][pjäs.y]
-
-
-
-def resultat_funktion_flytta_torn_vänster_rokad():
-    print("")
-def resultat_funktion_flytta_torn_höger_rokad():
-    print("")
-
 class FlyttBeteende:
     def __init__(self, flytt_graf, kan_döda, beetende_villkor_lista, resultat_funktion):
         self.kan_döda=kan_döda
@@ -234,16 +224,22 @@ class Pjäs:
 
 def lägg_till_beetenden_för_bonde(pjäs, vit):
     if vit==True:
-        pjäs.lägg_till_flytt_beteende(FlyttGraf(0, -1, 1),False)
+        pjäs.lägg_till_flytt_beteende(FlyttGraf(0, -1, 1),False,[],resultat_funktion_gör_bonde_till_drottning)
         pjäs.lägg_till_flytt_beteende(FlyttGraf(0, -2, 1),False,[Villkor(flytt_beetende_krav_är_detta_pjäsens_första_drag)])
-        pjäs.lägg_till_flytt_beteende(FlyttGraf(-1, -1, 1),True,[Villkor(flytt_beetende_krav_finns_det_en_fiende_pjäs_på_vektor2_position_relativt_till_pjäs,vektor2_position=[-1, -1])])
-        pjäs.lägg_till_flytt_beteende(FlyttGraf(1, -1, 1),True,[Villkor(flytt_beetende_krav_finns_det_en_fiende_pjäs_på_vektor2_position_relativt_till_pjäs,vektor2_position=[1, -1])])
+        pjäs.lägg_till_flytt_beteende(FlyttGraf(-1, -1, 1),True,[Villkor(flytt_beetende_krav_finns_det_en_fiende_pjäs_på_vektor2_position_relativt_till_pjäs,vektor2_position=[-1, -1])],resultat_funktion_gör_bonde_till_drottning)
+        pjäs.lägg_till_flytt_beteende(FlyttGraf(1, -1, 1),True,[Villkor(flytt_beetende_krav_finns_det_en_fiende_pjäs_på_vektor2_position_relativt_till_pjäs,vektor2_position=[1, -1])],resultat_funktion_gör_bonde_till_drottning)
+
+        pjäs.lägg_till_flytt_beteende(FlyttGraf(-1, -1, 1), True, [Villkor(flytt_beetende_krav_en_passant, vektor2_position=[-1, -1])], resultat_funktion_en_passant)
+        pjäs.lägg_till_flytt_beteende(FlyttGraf(1, -1, 1), True, [Villkor(flytt_beetende_krav_en_passant, vektor2_position=[1, -1])], resultat_funktion_en_passant)
+
     else:
         pjäs.lägg_till_flytt_beteende(FlyttGraf(0, 1, 1),False)
         pjäs.lägg_till_flytt_beteende(FlyttGraf(0, 2, 1),False,[Villkor(flytt_beetende_krav_är_detta_pjäsens_första_drag)])
         pjäs.lägg_till_flytt_beteende(FlyttGraf(-1, 1, 1),True,[Villkor(flytt_beetende_krav_finns_det_en_fiende_pjäs_på_vektor2_position_relativt_till_pjäs,vektor2_position=[-1, 1])])
         pjäs.lägg_till_flytt_beteende(FlyttGraf(1, 1, 1),True,[Villkor(flytt_beetende_krav_finns_det_en_fiende_pjäs_på_vektor2_position_relativt_till_pjäs,vektor2_position=[1, 1])])
 
+        pjäs.lägg_till_flytt_beteende(FlyttGraf(-1, 1, 1), True, [Villkor(flytt_beetende_krav_en_passant, vektor2_position=[-1, 1])], resultat_funktion_en_passant)
+        pjäs.lägg_till_flytt_beteende(FlyttGraf(1, 1, 1), True, [Villkor(flytt_beetende_krav_en_passant, vektor2_position=[1, 1])], resultat_funktion_en_passant)
 def skapa_pjäs_bonde(schack_bräde,x,y,vit):
     if vit==True:
         bonde=Pjäs("Vit Bonde","B", schack_bräde, x, y, 0,) #♙
@@ -343,12 +339,14 @@ def skapa_pjäs_kung(schack_bräde,x,y,vit): #Skirv inte schackbräde här
 
 def placera_standard_pjäser_i_shack_position_matris(matris):
     
-    for ix in range(8):
-        skapa_pjäs_bonde(matris,ix,6,True) #Vit=True
+    for ix in range(2,8):
+        skapa_pjäs_bonde(matris,ix,3,True) #Vit=True
         
-    for iy in range(8):
-        skapa_pjäs_bonde(matris,iy,1,False)
-        
+   # for iy in range(8):
+     #   skapa_pjäs_bonde(matris,iy,1,False)
+
+    skapa_pjäs_bonde(matris,1,1,False)
+
     #skapa_pjäs_löpare(matris,5,7,True)
     #skapa_pjäs_löpare(matris,2,7,True)
     #skapa_pjäs_löpare(matris,2,0,False)
@@ -485,6 +483,25 @@ def resultat_funktion_lång_rockad(drag,ta_tillbaka=False):
             drag.schackbräde_matris[0][0].pjäs = torn  # Flytta tornet till
 
     
+def resultat_funktion_gör_bonde_till_drottning(drag, ta_tillbaka=False):
+
+    if ta_tillbaka == False:
+        schackbräde_matris = drag.schackbräde_matris
+        x, y = drag.flytta_till_vektor2
+        
+        if drag.pjäs.färg == 0:  # Vit
+            if y == 0:
+                skapa_pjäs_dam(schackbräde_matris, x, y, True)
+                print("Yey")
+        else:  # Svart
+            if y == 7:
+                skapa_pjäs_dam(schackbräde_matris, x, y, False)
+
+    else:
+        # Återställ bonden
+        schackbräde_matris = drag.schackbräde_matris
+        x, y = drag.förra_positionen_vektor2
+        schackbräde_matris[x][y].pjäs=None
 
 def resultat_funktion_kort_rockad(drag,ta_tillbaka=False):
     if ta_tillbaka==False:
@@ -530,6 +547,7 @@ class Drag():
         self.förra_positionen_vektor2=None
         self.förra_positionen_pjäs=None
         self.resultat_funktion=resultat_funktion
+        self.fångad_pjäs = None  # Lägg till denna rad
     def utför_flytt(self):
 
         vald_schack_position=self.schackbräde_matris[self.flytta_till_vektor2[0]][self.flytta_till_vektor2[1]]
@@ -544,6 +562,7 @@ class Drag():
         self.pjäs.x=self.flytta_till_vektor2[0]
         self.pjäs.y=self.flytta_till_vektor2[1]
         self.pjäs.drag+=1
+        
         if self.resultat_funktion!=None:
             self.resultat_funktion(self)
 
@@ -591,6 +610,70 @@ def är_kung_i_schack(schackbräde_matris, färg):
                     return True  # Kungen är i schack
     return False  # Kungen är inte i schack
 
+
+def flytt_beetende_krav_en_passant(schackbräde_matris, pjäs, vektor2_position):
+    global drag_gjorda_drag_lista
+
+    x = pjäs.x + vektor2_position[0]
+    y = pjäs.y + vektor2_position[1]
+
+    if not är_vektor2_i_matris([x, y], schackbräde_matris):
+        return False
+
+    # Kontrollera att målrutan är tom
+    if schackbräde_matris[x][y].pjäs is not None:
+        return False
+
+    # Kontrollera om det finns en motståndarbonde bredvid som kan fångas en passant
+    enemy_x = x
+    enemy_y = pjäs.y
+
+    if not är_vektor2_i_matris([enemy_x, enemy_y], schackbräde_matris):
+        return False
+
+    enemy_pjäs = schackbräde_matris[enemy_x][enemy_y].pjäs
+
+    if enemy_pjäs is None:
+        return False
+
+    if enemy_pjäs.namn != ("Svart Bonde" if pjäs.färg == 0 else "Vit Bonde"):
+        return False
+
+    # Kontrollera om motståndarbonden just har flyttat två steg framåt
+    if len(drag_gjorda_drag_lista) == 0:
+        return False
+
+    senaste_drag = drag_gjorda_drag_lista[-1]
+
+    if senaste_drag.pjäs != enemy_pjäs:
+        return False
+
+    if abs(senaste_drag.förra_positionen_vektor2[1] - senaste_drag.flytta_till_vektor2[1]) != 2:
+        return False
+
+    # Alla villkor för en passant är uppfyllda
+    return True
+
+# Lägg till denna funktion för att hantera resultatet av en passant-draget
+def resultat_funktion_en_passant(drag, ta_tillbaka=False):
+    x = drag.flytta_till_vektor2[0]
+    y = drag.flytta_till_vektor2[1]
+
+    if drag.pjäs.färg == 0:  # Vit bonde
+        enemy_y = y + 1
+    else:  # Svart bonde
+        enemy_y = y - 1
+
+    enemy_pawn_position = drag.schackbräde_matris[x][enemy_y]
+
+    if not ta_tillbaka:
+        # Ta bort motståndarens bonde
+        drag.fångad_pjäs = enemy_pawn_position.pjäs
+        enemy_pawn_position.pjäs = None
+    else:
+        # Återställ motståndarens bonde
+        enemy_pawn_position.pjäs = drag.fångad_pjäs
+        drag.fångad_pjäs = None
 
 def är_schackmatt(schackbräde_matris, färg):
     
@@ -644,11 +727,12 @@ def välj_position_och_få_drag_lista_i_schackbräde_matris(schackbräde_matris,
             print("Ogiltig position, försök igen.")
 
 def spela_schack_match(schackbräde_matris):
+    global drag_gjorda_drag_lista
 
     match_pågår = True
     nuvarande_spelare_färg = 0  # 0 = vit, 1 = svart
     totala_antal_drag=0
-
+    drag_gjorda_drag_lista=[]
     while match_pågår:
         rita_schack_bräde(schackbräde_matris)
         print(f"{'Vit' if nuvarande_spelare_färg == 0 else 'Svart'} spelar")
@@ -672,6 +756,7 @@ def spela_schack_match(schackbräde_matris):
             for drag in drag_lista:
                 if drag.flytta_till_vektor2[0]==vald_vektor2_position[0] and drag.flytta_till_vektor2[1]==vald_vektor2_position[1]:
                     drag.utför_flytt()
+                    drag_gjorda_drag_lista.append(drag)
                     break
 
             totala_antal_drag+=1
@@ -685,7 +770,15 @@ def spela_schack_match(schackbräde_matris):
                 else:
                     print(f"{'Vit' if motståndare_färg == 0 else 'Svart'} kung är i schack!")
 
-
+            rev=input()
+            rev_first=rev[0:3]
+            rev_number=rev[3:]
+            if rev_first=="rev":
+                for x in range(int(rev_number)):
+                    if len(drag_gjorda_drag_lista)>0:
+                        drag_gjorda_drag_lista[-1].ta_tillbaka_flytt()
+                        totala_antal_drag-=1
+                        drag_gjorda_drag_lista.pop()
             #Byt spelaretu tru
             nuvarande_spelare_färg = motståndare_färg
             
