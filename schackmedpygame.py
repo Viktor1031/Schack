@@ -1,5 +1,6 @@
 import copy
 import pygame
+from schackdator import evaluera_position
 
 pygame.init()
 
@@ -472,6 +473,8 @@ while running:
             active = input_box.collidepoint(event.pos)
         elif event.type == pygame.KEYDOWN and active:
             if event.key == pygame.K_RETURN:
+                print("Position evaluerat till:")
+                print(evaluera_position(schackbrädet))
                 if move == 0:
                     if remi_erbjudet:
                         print("Skriv remi för att acceptera remi")
@@ -479,6 +482,12 @@ while running:
                             print("Remi accepterad")
                             running = False
                             break
+                        else:
+                            vems_tur = byt_färg(vems_tur)
+                            print("Remi nekad")
+                            remi_erbjudet = False
+                            text = ''
+                            continue
                     if text == "remi":
                         vems_tur = byt_färg(vems_tur)
                         remi_erbjudet = True
@@ -488,8 +497,8 @@ while running:
                     try:
                         x1 = sträng_till_rad[text[1]]
                         y1 = sträng_till_kolumn[text[0]]
-                    except KeyError:
-                        print("Välj en ruta genom att skriva t.ex 'e'")
+                    except:
+                        print("Välj en ruta genom att skriva t.ex 'e2'")
                         text = ''
                         continue
                     if är_drag_på_schackbrädet(x1, y1) == True:
@@ -510,8 +519,12 @@ while running:
                     else:
                         print("ruta är inte på schackbrädet")
                 elif move == 1:
-                    x2 = sträng_till_rad[text[1]]
-                    y2 = sträng_till_kolumn[text[0]]
+                    try:
+                        x2 = sträng_till_rad[text[1]]
+                        y2 = sträng_till_kolumn[text[0]]
+                    except:
+                        print("Inte en giltig ruta")
+                        continue
                     schackbrädet_testa_schack = copy.deepcopy(schackbrädet)
                     flytta_pjäs(schackbrädet_testa_schack, x1, y1, x2, y2)
                     bonde_kan_flytta_två_steg_2 = bonde_kan_flytta_två_steg_hit
