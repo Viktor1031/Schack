@@ -1,6 +1,5 @@
 import copy
 import pygame
-from schackdator import evaluera_position
 
 pygame.init()
 
@@ -473,8 +472,6 @@ while running:
             active = input_box.collidepoint(event.pos)
         elif event.type == pygame.KEYDOWN and active:
             if event.key == pygame.K_RETURN:
-                print("Position evaluerat till:")
-                print(evaluera_position(schackbrädet))
                 if move == 0:
                     if remi_erbjudet:
                         print("Skriv remi för att acceptera remi")
