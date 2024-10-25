@@ -5,7 +5,7 @@ pygame.init()
 
 SCREEN_WIDTH, SCREEN_HEIGHT = 500, 600
 BOARD_SIZE = 8
-SQUARE_SIZE = SCREEN_WIDTH // BOARD_SIZE
+SQUARE_SIZE = SCREEN_WIDTH // 8
 WHITE = (255, 255, 255)
 GREEN = (50, 100, 50)
 BLACK = (0, 0, 0)
@@ -46,11 +46,18 @@ def rita_brädet():
             pygame.draw.rect(screen, color, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
 
 def rita_pjäser(matris):
-    for row in range(BOARD_SIZE):
-        for col in range(BOARD_SIZE):
+    for row in range(8):
+        for col in range(8):
             piece = matris[row][col]
             if piece.pjäs != None:
                 screen.blit(piece_images[karaktär_till_sträng(piece.pjäs.karaktär)], (col * SQUARE_SIZE, row * SQUARE_SIZE))
+
+def rita_pjäser_svart(matris):
+    for row in range(8):
+        for col in range(8):
+            piece = matris[row][col]
+            if piece.pjäs != None:
+                screen.blit(piece_images[karaktär_till_sträng(piece.pjäs.karaktär)], ((7-col) * SQUARE_SIZE, (7-row) * SQUARE_SIZE))
 
 def karaktär_till_sträng(karaktär):
     if karaktär == "♙":
@@ -472,14 +479,6 @@ while running:
                             print("Remi accepterad")
                             running = False
                             break
-                    if är_det_schackmatt(schackbrädet, vems_tur):
-                        print(vems_tur + " blev schackmattad")
-                        running = False
-                        break
-                    if är_det_remi(schackbrädet, vems_tur):
-                        print("Remi!")
-                        running = False
-                        break
                     if text == "remi":
                         vems_tur = byt_färg(vems_tur)
                         remi_erbjudet = True
@@ -537,8 +536,16 @@ while running:
                                 flytta_pjäs(schackbrädet, x2, y2-2, x2, y2+1)
                                 print((x2, y2-2, x2, y2+1))
                             flytta_pjäs(schackbrädet, x1, y1, x2, y2)
-                            move = 0
                             vems_tur = byt_färg(vems_tur)
+                            if är_det_schackmatt(schackbrädet, vems_tur):
+                                print(vems_tur + " blev schackmattad")
+                                running = False
+                                break
+                            if är_det_remi(schackbrädet, vems_tur):
+                                print("Remi!")
+                                running = False
+                                break
+                            move = 0
                             print(vems_tur + " vilken pjäs vill du flytta?")
                             if är_bonde_på_sista_raden(schackbrädet) == True:
                                 move = 2
@@ -566,10 +573,19 @@ while running:
 
     screen.fill(WHITE)
     rita_brädet()
-    rita_pjäser(schackbrädet)
+    if vems_tur == "vit":
+        rita_pjäser(schackbrädet)
+    else:
+        rita_pjäser_svart(schackbrädet)
     rita_input_box(text, input_box, active)
 
     pygame.display.flip()
     clock.tick(30)
+
+visa_sista_positionen = True
+while visa_sista_positionen:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            still_open = False
 
 pygame.quit()
