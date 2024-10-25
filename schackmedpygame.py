@@ -1,11 +1,9 @@
 import copy
 import pygame
 
-# Initialize Pygame
 pygame.init()
 
-# Constants
-SCREEN_WIDTH, SCREEN_HEIGHT = 500, 600  # Increased height for input box
+SCREEN_WIDTH, SCREEN_HEIGHT = 500, 600
 BOARD_SIZE = 8
 SQUARE_SIZE = SCREEN_WIDTH // BOARD_SIZE
 WHITE = (255, 255, 255)
@@ -41,22 +39,19 @@ for key in piece_images:
 # Fonts
 FONT = pygame.font.Font(None, 32)
 
-# Function to draw the chessboard
-def draw_board():
+def rita_brädet():
     for row in range(BOARD_SIZE):
         for col in range(BOARD_SIZE):
             color = WHITE if (row + col) % 2 == 0 else GREEN
             pygame.draw.rect(screen, color, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
 
-# Function to draw pieces on the board
-def draw_pieces(matris):
+def rita_pjäser(matris):
     for row in range(BOARD_SIZE):
         for col in range(BOARD_SIZE):
             piece = matris[row][col]
             if piece.pjäs != None:
                 screen.blit(piece_images[karaktär_till_sträng(piece.pjäs.karaktär)], (col * SQUARE_SIZE, row * SQUARE_SIZE))
 
-# Convert characters to corresponding image keys
 def karaktär_till_sträng(karaktär):
     if karaktär == "♙":
         return "bP"
@@ -83,8 +78,7 @@ def karaktär_till_sträng(karaktär):
     elif karaktär == "♛":
         return "wQ"
 
-# Draw the input box and handle text input
-def draw_input_box(text, input_rect, active):
+def rita_input_box(text, input_rect, active):
     color = COLOR_ACTIVE if active else COLOR_INACTIVE
     pygame.draw.rect(screen, color, input_rect, 2)
     txt_surface = FONT.render(text, True, BLACK)
@@ -349,16 +343,6 @@ def placera_standard_pjäser_i_shack_position_matris(matris):
 
     return matris
 
-def rita_schack_bräde(matris):
-    bräde_sträng=""
-    for ix in range(8):
-        for iy in range(8):
-            schack_position=matris[ix][iy]
-            bräde_sträng+=schack_position.hämta_utseende_sträng()
-            bräde_sträng += " "
-        bräde_sträng+="\n"            
-    print(bräde_sträng)
-
 def flytta_pjäs(matris, fx, fy, tx, ty):
     pjäs_i_handen = matris[fx][fy].pjäs
     pjäs_i_handen.moves += 1
@@ -462,7 +446,7 @@ def byt_färg(färg):
 
 
 clock = pygame.time.Clock()
-input_box = pygame.Rect(50, SCREEN_HEIGHT - 50, 500, 32)  # Input box below chessboard
+input_box = pygame.Rect(50, SCREEN_HEIGHT - 50, 500, 32)
 text = ''
 active = False
 schackbrädet = skapa_standard_schackbräde_matris()
@@ -500,9 +484,15 @@ while running:
                         vems_tur = byt_färg(vems_tur)
                         remi_erbjudet = True
                         print("Remi erbjudet")
+                        text = ''
                         continue
-                    x1 = sträng_till_rad[text[1]]
-                    y1 = sträng_till_kolumn[text[0]]
+                    try:
+                        x1 = sträng_till_rad[text[1]]
+                        y1 = sträng_till_kolumn[text[0]]
+                    except KeyError:
+                        print("Välj en ruta genom att skriva t.ex 'e'")
+                        text = ''
+                        continue
                     if är_drag_på_schackbrädet(x1, y1) == True:
                         if schackbrädet[x1][y1].pjäs == None:
                             print("Ingen pjäs på denna ruta")
@@ -568,21 +558,18 @@ while running:
                             move = 0
                         else:
                             print("inte en giltig pjäs")
-                text = ''  # Clear the input after submission
+                text = ''
             elif event.key == pygame.K_BACKSPACE:
-                text = text[:-1]  # Remove last character
+                text = text[:-1]
             else:
-                text += event.unicode  # Append typed character
+                text += event.unicode
 
     screen.fill(WHITE)
-    draw_board()  # Draw the chessboard
-    draw_pieces(schackbrädet)  # Draw the chess pieces
-    draw_input_box(text, input_box, active)  # Draw the input box below the board
+    rita_brädet()
+    rita_pjäser(schackbrädet)
+    rita_input_box(text, input_box, active)
 
     pygame.display.flip()
     clock.tick(30)
 
 pygame.quit()
-
-#byter färg om man skriver fel ruta
-#blir inte schackmatt förrän man trycker enter
