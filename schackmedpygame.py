@@ -586,6 +586,6 @@ visa_sista_positionen = True
 while visa_sista_positionen:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            still_open = False
+            visa_sista_positionen = False
 
 pygame.quit()
