@@ -18,18 +18,18 @@ pygame.display.set_caption("Chess Board with Input")
 
 # Load images for chess pieces (placeholders, adjust paths as needed)
 piece_images = {
-    'bR': pygame.image.load('C:/Dokument/Python/Mschack/schack/pieces/black_rook.png'),
-    'bN': pygame.image.load('C:/Dokument/Python/Mschack/schack/pieces/black_knight.png'),
-    'bB': pygame.image.load('C:/Dokument/Python/Mschack/schack/pieces/black_bishop.png'),
-    'bQ': pygame.image.load('C:/Dokument/Python/Mschack/schack/pieces/black_queen.png'),
-    'bK': pygame.image.load('C:/Dokument/Python/Mschack/schack/pieces/black_king.png'),
-    'bP': pygame.image.load('C:/Dokument/Python/Mschack/schack/pieces/black_pawn.png'),
-    'wR': pygame.image.load('C:/Dokument/Python/Mschack/schack/pieces/white_rook.png'),
-    'wN': pygame.image.load('C:/Dokument/Python/Mschack/schack/pieces/white_knight.png'),
-    'wB': pygame.image.load('C:/Dokument/Python/Mschack/schack/pieces/white_bishop.png'),
-    'wQ': pygame.image.load('C:/Dokument/Python/Mschack/schack/pieces/white_queen.png'),
-    'wK': pygame.image.load('C:/Dokument/Python/Mschack/schack/pieces/white_king.png'),
-    'wP': pygame.image.load('C:/Dokument/Python/Mschack/schack/pieces/white_pawn.png'),
+    'bR': pygame.image.load('pjäs_bilder/black_rook.png'),
+    'bN': pygame.image.load('pjäs_bilder/black_knight.png'),
+    'bB': pygame.image.load('pjäs_bilder/black_bishop.png'),
+    'bQ': pygame.image.load('pjäs_bilder/black_queen.png'),
+    'bK': pygame.image.load('pjäs_bilder/black_king.png'),
+    'bP': pygame.image.load('pjäs_bilder/black_pawn.png'),
+    'wR': pygame.image.load('pjäs_bilder/white_rook.png'),
+    'wN': pygame.image.load('pjäs_bilder/white_knight.png'),
+    'wB': pygame.image.load('pjäs_bilder/white_bishop.png'),
+    'wQ': pygame.image.load('pjäs_bilder/white_queen.png'),
+    'wK': pygame.image.load('pjäs_bilder/white_king.png'),
+    'wP': pygame.image.load('pjäs_bilder/white_pawn.png'),
 }
 
 # Resize the pieces to fit the squares
