@@ -1,7 +1,6 @@
 from Model.SkapaPjäser.skapa_dam import skapa_pjäs_dam
 
 def resultat_funktion_gör_bonde_till_drottning(drag, ta_tillbaka=False):
-    print("PROBLEMA")
     if ta_tillbaka == False:
         schackbräde_matris = drag.schackbräde_matris
         x, y = drag.flytta_till_vektor2

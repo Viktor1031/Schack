@@ -131,7 +131,47 @@ def gå_tillbaka_till_game_state_att_välja_drag(spel_tillstånd):
     print(f"{'Vit' if spel_tillstånd.nuvarande_spelare_färg == 0 else 'Svart'} spelar")
     spel_tillstånd.text_input = ''
 
+# Summerar alla pjäsers värde för båda färgerna för att ge båda lagens poäng eller hur bra deras position är
+def evaluera_position(schackbräde_matris,färg):
+    poäng=0
+    for x in range(8):
+        for y in range(8):
+            if schackbräde_matris[x][y].pjäs!=None:
+                if schackbräde_matris[x][y].pjäs.färg==färg:
+                    poäng+=schackbräde_matris[x][y].pjäs.värde
+                else:
+                    poäng-=schackbräde_matris[x][y].pjäs.värde
+    return poäng
 
+class drag_kandidat:
+    def __init__(self, poäng, drag_lista):
+        self.poäng=poäng
+        self.drag_lista=drag_lista
+
+#Glömde helt bort att simulera andra spelarens drag. Alltså två färg variabler en för vem som ska göra draget och en för huvudfärg som ska hitta bästa draget.    
+def simulera_alla_möjliga_drag_för_en_färg_och_evaluera_på_max_djup(schackbräde_matris,färg,max_djup,spara_mängd_drag,drag_lista,drag_kandidat_lista,nuvarande_djup):
+    for x in range(8):
+        for y in range(8):
+            if schackbräde_matris[x][y].pjäs!=None:
+                if schackbräde_matris[x][y].pjäs.färg==färg:
+                    pjäs_drag_lista=få_drag_lista_från_vektor2_i_schackbräde_matris(schackbräde_matris, färg, [x,y])
+                    for drag in pjäs_drag_lista:
+                        nyaste_drag_lista=drag_lista+[drag]
+                        #print(nyaste_drag_lista)
+                        drag.utför_flytt()
+                        if max_djup>nuvarande_djup:
+                            simulera_alla_möjliga_drag_för_en_färg_och_evaluera_på_max_djup(schackbräde_matris,färg,max_djup,spara_mängd_drag,drag_lista=nyaste_drag_lista,drag_kandidat_lista=drag_kandidat_lista,nuvarande_djup=nuvarande_djup+1)
+                        else:
+                            positions_värde=evaluera_position(schackbräde_matris,färg)
+                            if positions_värde>drag_kandidat_lista[0].poäng:
+                               # print("------------")
+                                #print(positions_värde)
+                                #print(vektor2_till_sträng_position(nyaste_drag_lista[0].flytta_till_vektor2))
+                                #print("------------")
+                                drag_kandidat_lista[0]=drag_kandidat(positions_värde,nyaste_drag_lista)
+                        drag.ta_tillbaka_flytt()
+    if nuvarande_djup==1:
+        return drag_kandidat_lista
 
 def spela_schack_match(schackbräde_matris,spel_tillstånd):
 
@@ -167,7 +207,24 @@ def spela_schack_match(schackbräde_matris,spel_tillstånd):
                     
             if event.type == pygame.KEYDOWN and active:
                 if event.key == pygame.K_RETURN:
-                    
+                    if spel_tillstånd.text_input=="score":
+                        score=evaluera_position(schackbräde_matris,spel_tillstånd.nuvarande_spelare_färg)
+                        print(f"{'Vit' if spel_tillstånd.nuvarande_spelare_färg == 0 else 'Svart'} poäng: {score}")
+                        spel_tillstånd.text_input = ''
+                        continue
+                    if spel_tillstånd.text_input[0:2]=="ai":
+                        djup=int(spel_tillstånd.text_input[2:])
+                        bästa_drag=simulera_alla_möjliga_drag_för_en_färg_och_evaluera_på_max_djup(schackbräde_matris,spel_tillstånd.nuvarande_spelare_färg,djup,1,[],[drag_kandidat(-100,None)],1)
+                        
+                        spel_tillstånd.drag_alternativ_lista = [bästa_drag[0].drag_lista[0]]
+                        processa_drag_alternativ_lista(spel_tillstånd)
+                        vald_vektor2_position=bästa_drag[0].drag_lista[0].flytta_till_vektor2
+                        vald_sträng_position=vektor2_till_sträng_position(vald_vektor2_position)
+                        print(f'Bästa draget:{bästa_drag[0].drag_lista[0].flytta_till_vektor2}')
+
+                        utför_drag(schackbräde_matris, spel_tillstånd, vald_sträng_position, vald_vektor2_position)
+                        continue
+
                     if spel_tillstånd.text_input[0:3]=="rev":
                         rev_number=spel_tillstånd.text_input[3:]
                         rev_amount=int(rev_number)

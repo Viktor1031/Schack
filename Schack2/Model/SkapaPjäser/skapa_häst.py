@@ -12,10 +12,10 @@ def lägg_till_beetenden_för_häst(pjäs):
 
 def skapa_pjäs_häst(schack_bräde,x,y,vit): #Skirv inte schackbräde här
     if vit==True:
-        häst=Pjäs("Vit Häst","H","wN", schack_bräde, x, y, 0) #♘
+        häst=Pjäs("Vit Häst","H","wN", schack_bräde, x, y, 0,3) #♘
         lägg_till_beetenden_för_häst(häst)
     else:
-        häst=Pjäs("Svart Häst","h","bN", schack_bräde, x, y,1) #♞
+        häst=Pjäs("Svart Häst","h","bN", schack_bräde, x, y,1,3) #♞
         lägg_till_beetenden_för_häst(häst)
         
     schack_bräde[x][y].pjäs=häst

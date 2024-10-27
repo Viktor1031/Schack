@@ -129,7 +129,7 @@ class FlyttBeteende:
         
        
 class Pjäs:
-    def __init__(self, namn, karaktär, bild_nyckel, förälder, x, y, färg):
+    def __init__(self, namn, karaktär, bild_nyckel, förälder, x, y, färg, värde):
         self.namn = namn
         self.karaktär = karaktär
         self.bild_nyckel=bild_nyckel
@@ -140,6 +140,7 @@ class Pjäs:
         self.beteende_lista=[]
         self.drag=0
         self.senaste_draget=0
+        self.värde=värde
 
     def hämta_utseende_sträng(self):
         return self.karaktär

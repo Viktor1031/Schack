@@ -8,10 +8,10 @@ def lägg_till_beetenden_för_torn(pjäs):
         
 def skapa_pjäs_torn(schack_bräde,x,y,vit): #Skirv inte schackbräde här
     if vit==True:
-        torn=Pjäs("Vitt Torn","R","wR", schack_bräde, x, y, 0) #♖
+        torn=Pjäs("Vitt Torn","R","wR", schack_bräde, x, y, 0,5) #♖
         lägg_till_beetenden_för_torn(torn)
     else:
-        torn=Pjäs("Svart Torn","r","bR", schack_bräde, x, y,1) #♜
+        torn=Pjäs("Svart Torn","r","bR", schack_bräde, x, y,1,5) #♜
         lägg_till_beetenden_för_torn(torn)
         
     schack_bräde[x][y].pjäs=torn

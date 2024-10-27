@@ -24,10 +24,10 @@ def lägg_till_beetenden_för_bonde(pjäs, vit,alla_drag_gjorda_lista):
 
 def skapa_pjäs_bonde(schack_bräde,x,y,vit,alla_drag_gjorda_lista):
     if vit==True:
-        bonde=Pjäs("Vit Bonde","B", "wP", schack_bräde, x, y, 0,) #♙
+        bonde=Pjäs("Vit Bonde","B", "wP", schack_bräde, x, y, 0,1) #♙
         lägg_till_beetenden_för_bonde(bonde,vit,alla_drag_gjorda_lista)
     else:
-        bonde=Pjäs("Svart Bonde","b","bP", schack_bräde, x, y,1) #♟
+        bonde=Pjäs("Svart Bonde","b","bP", schack_bräde, x, y,1,1) #♟
         lägg_till_beetenden_för_bonde(bonde,vit,alla_drag_gjorda_lista)
         
     schack_bräde[x][y].pjäs=bonde
