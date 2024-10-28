@@ -136,12 +136,25 @@ def evaluera_position(schackbräde_matris,färg):
     poäng=0
     for x in range(8):
         for y in range(8):
-            if schackbräde_matris[x][y].pjäs!=None:
-                if schackbräde_matris[x][y].pjäs.färg==färg:
-                    poäng+=schackbräde_matris[x][y].pjäs.värde
+            pjäs=schackbräde_matris[x][y].pjäs
+            if pjäs!=None:
+                if pjäs.färg==färg:
+                    poäng+=pjäs.värde
+                    poäng-=pjäs_avstånd_från_mitten(pjäs)/40
+                    #pjäs_drag_lista=få_drag_lista_från_vektor2_i_schackbräde_matris(schackbräde_matris, färg, [x,y])
+                    #if pjäs_drag_lista!=None:
+                       # poäng+=len(pjäs_drag_lista)/10
                 else:
-                    poäng-=schackbräde_matris[x][y].pjäs.värde
+                    poäng-=pjäs.värde
+                    poäng+=pjäs_avstånd_från_mitten(pjäs)/40
+                    #pjäs_drag_lista=få_drag_lista_från_vektor2_i_schackbräde_matris(schackbräde_matris, 1-färg, [x,y])
+                    #if pjäs_drag_lista!=None:
+                       # poäng-=len(pjäs_drag_lista)/10
     return poäng
+
+def pjäs_avstånd_från_mitten(pjäs):
+    return abs(pjäs.x-4.5)+abs(pjäs.y-4.5)
+
 
 class drag_kandidat:
     def __init__(self, poäng, drag_lista):
@@ -150,26 +163,43 @@ class drag_kandidat:
 
 #Glömde helt bort att simulera andra spelarens drag. Alltså två färg variabler en för vem som ska göra draget och en för huvudfärg som ska hitta bästa draget.    
 def simulera_alla_möjliga_drag_för_en_färg_och_evaluera_på_max_djup(schackbräde_matris,färg,max_djup,spara_mängd_drag,drag_lista,drag_kandidat_lista,nuvarande_djup):
+    
+    färg_utför_drag=(färg+nuvarande_djup-1)%2
+    #print(f'Färfg {färg_utför_drag}')
     for x in range(8):
         for y in range(8):
             if schackbräde_matris[x][y].pjäs!=None:
-                if schackbräde_matris[x][y].pjäs.färg==färg:
-                    pjäs_drag_lista=få_drag_lista_från_vektor2_i_schackbräde_matris(schackbräde_matris, färg, [x,y])
-                    for drag in pjäs_drag_lista:
-                        nyaste_drag_lista=drag_lista+[drag]
-                        #print(nyaste_drag_lista)
-                        drag.utför_flytt()
+                if schackbräde_matris[x][y].pjäs.färg==färg_utför_drag:
+                    if färg_utför_drag==färg:
+                        pjäs_drag_lista=få_drag_lista_från_vektor2_i_schackbräde_matris(schackbräde_matris, färg, [x,y])
+                        for drag in pjäs_drag_lista:
+                            nyaste_drag_lista=drag_lista+[drag]
+                            #print(f'Drag: {drag.flytta_till_vektor2}')
+                            #print(nyaste_drag_lista)
+                            drag.utför_flytt()
+                            if max_djup>nuvarande_djup:
+                                simulera_alla_möjliga_drag_för_en_färg_och_evaluera_på_max_djup(schackbräde_matris,färg,max_djup,spara_mängd_drag,drag_lista=nyaste_drag_lista,drag_kandidat_lista=drag_kandidat_lista,nuvarande_djup=nuvarande_djup+1)
+                            else:
+                                positions_värde=evaluera_position(schackbräde_matris,färg)
+                                #print(positions_värde,nyaste_drag_lista[0].flytta_till_vektor2)
+                                if positions_värde>drag_kandidat_lista[0].poäng:
+                                    drag_kandidat_lista[0]=drag_kandidat(positions_värde,nyaste_drag_lista)
+
+                            drag.ta_tillbaka_flytt()
+                    else:
+                        bästa_drag_lista_för_motståndaren=simulera_alla_möjliga_drag_för_en_färg_och_evaluera_på_max_djup(schackbräde_matris,färg_utför_drag,1,1,[],[drag_kandidat(-100,None)],1)
+                        bästa_drag=bästa_drag_lista_för_motståndaren[0].drag_lista[0]
+                        nyaste_drag_lista=drag_lista+[bästa_drag]
+                        
+                        bästa_drag.utför_flytt()
                         if max_djup>nuvarande_djup:
                             simulera_alla_möjliga_drag_för_en_färg_och_evaluera_på_max_djup(schackbräde_matris,färg,max_djup,spara_mängd_drag,drag_lista=nyaste_drag_lista,drag_kandidat_lista=drag_kandidat_lista,nuvarande_djup=nuvarande_djup+1)
                         else:
                             positions_värde=evaluera_position(schackbräde_matris,färg)
                             if positions_värde>drag_kandidat_lista[0].poäng:
-                               # print("------------")
-                                #print(positions_värde)
-                                #print(vektor2_till_sträng_position(nyaste_drag_lista[0].flytta_till_vektor2))
-                                #print("------------")
                                 drag_kandidat_lista[0]=drag_kandidat(positions_värde,nyaste_drag_lista)
-                        drag.ta_tillbaka_flytt()
+                        bästa_drag.ta_tillbaka_flytt()
+
     if nuvarande_djup==1:
         return drag_kandidat_lista
 
