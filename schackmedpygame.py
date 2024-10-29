@@ -279,6 +279,22 @@ def skapa_torn(karaktär, färg, x, y):
     torn.lägg_till_flytt_beteende(FlyttGraf(-1, 0, 7))
     return torn
 
+def skapa_knook(karaktär, färg, x, y):
+    knook = piece("Knook", karaktär, färg, x, y)
+    knook.lägg_till_flytt_beteende(FlyttGraf(0, 1, 7))
+    knook.lägg_till_flytt_beteende(FlyttGraf(0, -1, 7))
+    knook.lägg_till_flytt_beteende(FlyttGraf(1, 0, 7))
+    knook.lägg_till_flytt_beteende(FlyttGraf(-1, 0, 7))
+    knook.lägg_till_flytt_beteende(FlyttGraf(1, 2, 1))
+    knook.lägg_till_flytt_beteende(FlyttGraf(1, -2, 1))
+    knook.lägg_till_flytt_beteende(FlyttGraf(-1, 2, 1))
+    knook.lägg_till_flytt_beteende(FlyttGraf(-1, -2, 1))
+    knook.lägg_till_flytt_beteende(FlyttGraf(2, 1, 1))
+    knook.lägg_till_flytt_beteende(FlyttGraf(2, -1, 1))
+    knook.lägg_till_flytt_beteende(FlyttGraf(-2, 1, 1))
+    knook.lägg_till_flytt_beteende(FlyttGraf(-2, -1, 1))
+    return knook
+
 def skapa_häst(karaktär, färg, x, y):
     häst = piece("Häst", karaktär, färg, x, y)
     häst.lägg_till_flytt_beteende(FlyttGraf(1, 2, 1))
@@ -338,6 +354,7 @@ def placera_standard_pjäser_i_shack_position_matris(matris):
     matris[0][5].pjäs = skapa_löpare("♗", "svart", 0, 5)
     matris[0][4].pjäs = skapa_kung("♔", "svart", 0, 4)
     matris[0][3].pjäs = skapa_drottning("♕", "svart", 0, 3)
+    matris[4][4].pjäs = skapa_knook("♖", "svart", 4, 4)
     
     matris[7][0].pjäs = skapa_torn("♜", "vit", 7, 0)
     matris[7][7].pjäs = skapa_torn("♜", "vit", 7, 7)
