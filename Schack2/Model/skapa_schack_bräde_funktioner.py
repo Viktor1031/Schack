@@ -5,6 +5,7 @@ from Model.SkapaPjäser.skapa_häst import skapa_pjäs_häst
 from Model.SkapaPjäser.skapa_löpare import skapa_pjäs_löpare
 from Model.SkapaPjäser.skapa_dam import skapa_pjäs_dam
 from Model.SkapaPjäser.skapa_kung import skapa_pjäs_kung
+from Model.SkapaPjäser.skapa_knook import skapa_pjäs_knook
 from Controller.matris_funktioner import skapa_2d_matris
 
 def fyll_2d_matris_med_tomma_schack_positioner(matris):
@@ -49,8 +50,8 @@ def placera_standard_pjäser_i_shack_position_matris(matris,spel_tillstånd):
     
     skapa_pjäs_torn(matris,0,7,True)
     skapa_pjäs_torn(matris,7,7,True)
-    skapa_pjäs_torn(matris,0,0,False)
-    skapa_pjäs_torn(matris,7,0,False)
+    skapa_pjäs_knook(matris,7,0,False)
+    skapa_pjäs_knook(matris,0,7,False)
     
     skapa_pjäs_dam(matris,3,7,True)
     skapa_pjäs_dam(matris,3,0,False)
