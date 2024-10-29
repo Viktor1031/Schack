@@ -11,11 +11,11 @@ def lägg_till_beetenden_för_torn(pjäs):
         
 def skapa_pjäs_knook(schack_bräde,x,y,vit): #Skirv inte schackbräde här
     if vit==True:
-        torn=Pjäs("Vitt Knook","R","wKnook", schack_bräde, x, y, 0,5) #♖
+        torn=Pjäs("Vitt Knook","R","wKnook", schack_bräde, x, y, 0,7) #♖
         lägg_till_beetenden_för_torn(torn)
         lägg_till_beetenden_för_häst(torn)
     else:
-        torn=Pjäs("Svart Knook","r","bKnook", schack_bräde, x, y,1,5) #♜
+        torn=Pjäs("Svart Knook","r","bKnook", schack_bräde, x, y,1,7) #♜
         lägg_till_beetenden_för_torn(torn)
         lägg_till_beetenden_för_häst(torn)
 
