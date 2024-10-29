@@ -43,6 +43,8 @@ pjäs_bild_katalog = {
     'wP': pygame.image.load(sys.path[0]+'/Image/white_pawn.png'),
     'wKnook': pygame.image.load(sys.path[0]+'/Image/white_knook.png'),
     'bKnook': pygame.image.load(sys.path[0]+'/Image/black_knook.png'),
+    'wElefant': pygame.image.load(sys.path[0]+'/Image/white_elephant.png'),
+    'bElefant': pygame.image.load(sys.path[0]+'/Image/black_elephant.png'),
 }
 
 for key in pjäs_bild_katalog:

@@ -7,6 +7,9 @@ from Model.SkapaPjäser.skapa_dam import skapa_pjäs_dam
 from Model.SkapaPjäser.skapa_kung import skapa_pjäs_kung
 from Model.SkapaPjäser.skapa_knook import skapa_pjäs_knook
 from Controller.matris_funktioner import skapa_2d_matris
+from Model.SkapaPjäser.skapa_elefant import skapa_pjäs_elefant
+from Model.SkapaPjäser.skapa_torn_schack2 import skapa_pjäs_torn_schack2
+from Model.SkapaPjäser.skapa_bonde_schack2 import skapa_pjäs_bonde_schack2
 
 def fyll_2d_matris_med_tomma_schack_positioner(matris):
     for ix in range(len(matris)):
@@ -26,6 +29,13 @@ def skapa_standard_schackbräde_matris(spel_tillstånd):
     fyll_2d_matris_med_tomma_schack_positioner(schackbräde_matris)
     gör_shack_position_matris_mönstrad(schackbräde_matris)
     placera_standard_pjäser_i_shack_position_matris(schackbräde_matris,spel_tillstånd)
+    return schackbräde_matris
+
+def skapa_standard_schackbräde_matris_schack2(spel_tillstånd):
+    schackbräde_matris=skapa_2d_matris(8,8)
+    fyll_2d_matris_med_tomma_schack_positioner(schackbräde_matris)
+    gör_shack_position_matris_mönstrad(schackbräde_matris)
+    placera_standard_pjäser_i_schack2(schackbräde_matris,spel_tillstånd)
     return schackbräde_matris
 
 def placera_standard_pjäser_i_shack_position_matris(matris,spel_tillstånd):
@@ -58,4 +68,29 @@ def placera_standard_pjäser_i_shack_position_matris(matris,spel_tillstånd):
     
     skapa_pjäs_kung(matris,4,7,True)
     skapa_pjäs_kung(matris,4,0,False)
+
+def placera_standard_pjäser_i_schack2(matris, spel_tillstånd):
+    for ix in range(8):
+        skapa_pjäs_bonde_schack2(matris,ix,6,True,spel_tillstånd.alla_drag_gjorda_lista) 
+    for ix in range(8):
+        skapa_pjäs_bonde_schack2(matris,ix,1,False,spel_tillstånd.alla_drag_gjorda_lista)
+    skapa_pjäs_elefant(matris,5,7,True)
+    skapa_pjäs_elefant(matris,2,7,True)
+    skapa_pjäs_elefant(matris,2,0,False)
+    skapa_pjäs_elefant(matris,5,0,False)
     
+    skapa_pjäs_knook(matris,1,7,True)
+    skapa_pjäs_knook(matris,6,7,True)
+    skapa_pjäs_knook(matris,1,0,False)
+    skapa_pjäs_knook(matris,6,0,False)
+    
+    skapa_pjäs_torn_schack2(matris,0,7,True)
+    skapa_pjäs_torn_schack2(matris,7,7,True)
+    skapa_pjäs_torn_schack2(matris,7,0,False)
+    skapa_pjäs_torn_schack2(matris,0,0,False)
+    
+    skapa_pjäs_dam(matris,3,7,True)
+    skapa_pjäs_dam(matris,3,0,False)
+    
+    skapa_pjäs_kung(matris,4,7,True)
+    skapa_pjäs_kung(matris,4,0,False)
