@@ -14,11 +14,9 @@ def skapa_pjäs_knook(schack_bräde,x,y,vit): #Skirv inte schackbräde här
         torn=Pjäs("Vitt Knook","R","wKnook", schack_bräde, x, y, 0,5) #♖
         lägg_till_beetenden_för_torn(torn)
         lägg_till_beetenden_för_häst(torn)
-        lägg_till_beetenden_för_löpare(torn)
     else:
         torn=Pjäs("Svart Knook","r","bKnook", schack_bräde, x, y,1,5) #♜
         lägg_till_beetenden_för_torn(torn)
         lägg_till_beetenden_för_häst(torn)
-        lägg_till_beetenden_för_löpare(torn)
 
     schack_bräde[x][y].pjäs=torn
