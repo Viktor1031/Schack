@@ -6,7 +6,7 @@ from Controller.allmäna_flytt_beetende_krav import flytt_beetende_krav_är_dett
 def lägg_till_beetenden_för_bonde(pjäs, vit,alla_drag_gjorda_lista):
     if vit==True:
         pjäs.lägg_till_flytt_beteende(FlyttGraf(0, -1, 1),False,[],resultat_funktion_gör_bonde_till_drottning)
-        pjäs.lägg_till_flytt_beteende(FlyttGraf(0, -2, 1),False,[Villkor(flytt_beetende_krav_är_detta_pjäsens_första_drag)])
+        pjäs.lägg_till_flytt_beteende(FlyttGraf(0, -1, 2),False,[Villkor(flytt_beetende_krav_är_detta_pjäsens_första_drag)])
         pjäs.lägg_till_flytt_beteende(FlyttGraf(-1, -1, 1),True,[Villkor(flytt_beetende_krav_finns_det_en_fiende_pjäs_på_vektor2_position_relativt_till_pjäs,vektor2_position=[-1, -1])],resultat_funktion_gör_bonde_till_drottning)
         pjäs.lägg_till_flytt_beteende(FlyttGraf(1, -1, 1),True,[Villkor(flytt_beetende_krav_finns_det_en_fiende_pjäs_på_vektor2_position_relativt_till_pjäs,vektor2_position=[1, -1])],resultat_funktion_gör_bonde_till_drottning)
 
@@ -15,7 +15,7 @@ def lägg_till_beetenden_för_bonde(pjäs, vit,alla_drag_gjorda_lista):
 
     else:
         pjäs.lägg_till_flytt_beteende(FlyttGraf(0, 1, 1),False,[],resultat_funktion_gör_bonde_till_drottning)
-        pjäs.lägg_till_flytt_beteende(FlyttGraf(0, 2, 1),False,[Villkor(flytt_beetende_krav_är_detta_pjäsens_första_drag)])
+        pjäs.lägg_till_flytt_beteende(FlyttGraf(0, 1, 2),False,[Villkor(flytt_beetende_krav_är_detta_pjäsens_första_drag)])
         pjäs.lägg_till_flytt_beteende(FlyttGraf(-1, 1, 1),True,[Villkor(flytt_beetende_krav_finns_det_en_fiende_pjäs_på_vektor2_position_relativt_till_pjäs,vektor2_position=[-1, 1])],resultat_funktion_gör_bonde_till_drottning)
         pjäs.lägg_till_flytt_beteende(FlyttGraf(1, 1, 1),True,[Villkor(flytt_beetende_krav_finns_det_en_fiende_pjäs_på_vektor2_position_relativt_till_pjäs,vektor2_position=[1, 1])],resultat_funktion_gör_bonde_till_drottning)
 
